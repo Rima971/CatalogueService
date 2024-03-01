@@ -11,7 +11,7 @@ import java.util.Currency;
 @Data
 public class Money {
     double amount;
-    @Enumerated(EnumType.STRING)
+//    @Enumerated(EnumType.STRING)
     Currency currency;
 
     public Money(double amount, Currency currency){
