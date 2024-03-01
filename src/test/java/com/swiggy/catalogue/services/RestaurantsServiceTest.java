@@ -28,9 +28,7 @@ public class RestaurantsServiceTest {
     }
     @Test
     public void test_shouldCreateARestaurant(){
-        RestaurantRequestDto request = new RestaurantRequestDto();
-        request.setName(RESTAURANT_NAME);
-        request.setPincode(RESTAURANT_PINCODE);
+        RestaurantRequestDto request = new RestaurantRequestDto(RESTAURANT_NAME, RESTAURANT_PINCODE);
 
         assertDoesNotThrow(()-> {
             Restaurant savedRestaurant = this.restaurantsService.create(request);
