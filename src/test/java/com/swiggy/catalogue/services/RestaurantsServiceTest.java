@@ -9,6 +9,8 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 import static com.swiggy.catalogue.Constants.*;
@@ -27,7 +29,6 @@ public class RestaurantsServiceTest {
     void setUp() {
         openMocks(this);
         when(this.mockedRestaurantDao.save(any(Restaurant.class))).thenReturn(this.testRestaurant);
-        when(this.mockedRestaurantDao.existsByName(RESTAURANT_NAME)).thenReturn(true);
     }
     @Test
     public void test_shouldCreateARestaurant(){
@@ -44,22 +45,30 @@ public class RestaurantsServiceTest {
     @Test
     public void test_shouldThrowDuplicateRestaurantExceptionWhenTheRestaurantNameBeingUsedForCreationAlreadyExists(){
         RestaurantRequestDto request = new RestaurantRequestDto(RESTAURANT_NAME, RESTAURANT_PINCODE);
+        when(this.mockedRestaurantDao.existsByName(RESTAURANT_NAME)).thenReturn(true);
 
         assertThrows(DuplicateRestaurantName.class, ()->this.restaurantsService.create(request));
     }
 
     @Test
     public void test_shouldReturnListOfAllRestaurantsIfPincodeIsNotPassed(){
-        this.restaurantsService.fetchAllRestaurants(Optional.empty());
+        List<Restaurant> list = new ArrayList<Restaurant>(List.of(new Restaurant(), new Restaurant(), new Restaurant()));
+        when(this.mockedRestaurantDao.findAll()).thenReturn(list);
+        List<Restaurant> returnedList = this.restaurantsService.fetchAllRestaurants(Optional.empty());
 
         verify(this.mockedRestaurantDao, times(1)).findAll();
+        assertEquals(list, returnedList);
     }
 
     @Test
     public void test_shouldReturnListOfNearestRestaurantsIfPincodeIsPassed(){
         int pincode = 123456;
-        this.restaurantsService.fetchAllRestaurants(Optional.of(pincode));
+        List<Restaurant> list = new ArrayList<Restaurant>(List.of(new Restaurant(), new Restaurant(), new Restaurant()));
+        when(this.mockedRestaurantDao.findNearestRestaurants(pincode)).thenReturn(list);
+
+        List<Restaurant> returnedList = this.restaurantsService.fetchAllRestaurants(Optional.of(pincode));
 
         verify(this.mockedRestaurantDao, times(1)).findNearestRestaurants(pincode);
+        assertEquals(list, returnedList);
     }
 }

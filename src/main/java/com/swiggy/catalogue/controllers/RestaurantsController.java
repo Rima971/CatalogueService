@@ -27,8 +27,9 @@ public class RestaurantsController {
     }
 
     @GetMapping("")
-    public ResponseEntity<GenericHttpResponse> fetchAll(@RequestParam(required = false) Optional<Integer> pincode){
+    public ResponseEntity<GenericHttpResponse> fetchAll(@RequestParam Optional<Integer> pincode){
         List<Restaurant> returnedList = this.restaurantsService.fetchAllRestaurants(pincode);
         return GenericHttpResponse.create(HttpStatus.OK, SUCCESSFULLY_FETCHED, returnedList);
     }
+
 }
