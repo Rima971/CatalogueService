@@ -3,6 +3,7 @@ package com.swiggy.catalogue.services;
 import com.swiggy.catalogue.dtos.RestaurantRequestDto;
 import com.swiggy.catalogue.entities.Restaurant;
 import com.swiggy.catalogue.exceptions.DuplicateRestaurantName;
+import com.swiggy.catalogue.exceptions.RestaurantNotFound;
 import com.swiggy.catalogue.repositories.RestaurantsDao;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -70,5 +71,23 @@ public class RestaurantsServiceTest {
 
         verify(this.mockedRestaurantDao, times(1)).findNearestRestaurants(pincode);
         assertEquals(list, returnedList);
+    }
+
+    @Test
+    public void test_shouldFetchARestaurantByItsId(){
+        when(this.mockedRestaurantDao.findById(RESTAURANT_ID)).thenReturn(Optional.ofNullable(this.testRestaurant));
+
+        assertDoesNotThrow(()-> {
+            Restaurant foundRestaurant = this.restaurantsService.fetchById(RESTAURANT_ID);
+            assertEquals(this.testRestaurant, foundRestaurant);
+        });
+        verify(this.mockedRestaurantDao, times(1)).findById(RESTAURANT_ID);
+    }
+
+    @Test
+    public void test_shouldThrowRestaurantNotFoundException(){
+        when(this.mockedRestaurantDao.findById(RESTAURANT_ID)).thenReturn(Optional.empty());
+
+        assertThrows(RestaurantNotFound.class, ()-> this.restaurantsService.fetchById(RESTAURANT_ID));
     }
 }
