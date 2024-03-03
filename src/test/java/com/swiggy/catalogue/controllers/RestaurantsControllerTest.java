@@ -67,7 +67,6 @@ public class RestaurantsControllerTest {
                 .andExpect(jsonPath("$.data.pincode").value(RESTAURANT_PINCODE));
 
         verify(this.restaurantsService, times(1)).create(request);
-
     }
 
     @Test
@@ -98,5 +97,21 @@ public class RestaurantsControllerTest {
                 .andExpect(jsonPath("$.data").value(hasSize(2)));
 
         verify(this.restaurantsService, times(1)).fetchAllRestaurants(Optional.empty());
+    }
+
+    @Test
+    public void test_shouldSuccessfullyFetchARestaurantByItsId() throws Exception {
+        when(this.restaurantsService.fetchById(this.testRestaurant.getId())).thenReturn(this.testRestaurant);
+
+        this.mockMvc.perform(get(BASE_URL+"/"+RESTAURANT_ID))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.status").value(HttpStatus.OK.name()))
+                .andExpect(jsonPath("$.statusCode").value(HttpStatus.OK.value()))
+                .andExpect(jsonPath("$.message").value(SUCCESSFULLY_FETCHED))
+                .andExpect(jsonPath("$.data.id").value(RESTAURANT_ID))
+                .andExpect(jsonPath("$.data.name").value(RESTAURANT_NAME))
+                .andExpect(jsonPath("$.data.pincode").value(RESTAURANT_PINCODE));
+
+        verify(this.restaurantsService, times(1)).fetchById(RESTAURANT_ID);
     }
 }
