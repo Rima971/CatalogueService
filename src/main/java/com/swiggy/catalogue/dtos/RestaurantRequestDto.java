@@ -16,7 +16,7 @@ public class RestaurantRequestDto {
     private String name;
 
     @NotNull(message = "pincode is required")
-    @Min(100000)
+    @Min(value = 100000, message = "pincode must be at least 100000")
     private int pincode;
 }
 

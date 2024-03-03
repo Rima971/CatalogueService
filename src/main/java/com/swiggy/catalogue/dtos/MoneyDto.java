@@ -1,5 +1,7 @@
 package com.swiggy.catalogue.dtos;
 
+import com.swiggy.catalogue.customValidators.ValueOfEnum;
+import com.swiggy.catalogue.enums.Currency;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
@@ -14,5 +16,6 @@ public class MoneyDto {
     private double amount;
 
     @NotBlank(message = "currency cannot be null")
+    @ValueOfEnum(enumClass = Currency.class)
     private String currency;
 }

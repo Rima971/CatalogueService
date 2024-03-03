@@ -66,6 +66,5 @@ public class MenuItemsControllerTest {
                 .andExpect(jsonPath("$.data.price.currency").value(Currency.INR.name()));
 
         verify(this.menuItemsService, times(1)).create(RESTAURANT_ID, this.request);
-
     }
 }
