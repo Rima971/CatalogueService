@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.swiggy.catalogue.dtos.RestaurantRequestDto;
 import com.swiggy.catalogue.entities.Restaurant;
 import com.swiggy.catalogue.exceptions.DuplicateRestaurantName;
+import com.swiggy.catalogue.exceptions.RestaurantNotFound;
 import com.swiggy.catalogue.services.RestaurantsService;
 import org.hamcrest.core.IsNull;
 import org.junit.jupiter.api.BeforeEach;
@@ -23,6 +24,7 @@ import java.util.Optional;
 
 import static com.swiggy.catalogue.Constants.*;
 import static com.swiggy.catalogue.constants.ErrorMessage.DUPLICATE_RESTAURANT_NAME;
+import static com.swiggy.catalogue.constants.ErrorMessage.RESTAURANT_NOT_FOUND;
 import static com.swiggy.catalogue.constants.SuccessMessage.*;
 import static org.hamcrest.Matchers.hasSize;
 import static org.mockito.Mockito.*;
@@ -113,5 +115,17 @@ public class RestaurantsControllerTest {
                 .andExpect(jsonPath("$.data.pincode").value(RESTAURANT_PINCODE));
 
         verify(this.restaurantsService, times(1)).fetchById(RESTAURANT_ID);
+    }
+
+    @Test
+    public void test_shouldThrow409ConflictFetchingARestaurantWithAnInvalidId() throws Exception {
+        when(this.restaurantsService.fetchById(RESTAURANT_ID)).thenThrow(RestaurantNotFound.class);
+
+        this.mockMvc.perform(get(BASE_URL+"/"+RESTAURANT_ID))
+                .andExpect(status().isConflict())
+                .andExpect(jsonPath("$.status").value(HttpStatus.CONFLICT.name()))
+                .andExpect(jsonPath("$.statusCode").value(HttpStatus.CONFLICT.value()))
+                .andExpect(jsonPath("$.message").value(RESTAURANT_NOT_FOUND))
+                .andExpect(jsonPath("$.data").value(IsNull.nullValue()));
     }
 }
