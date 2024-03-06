@@ -65,11 +65,11 @@ public class RestaurantsServiceTest {
     public void test_shouldReturnListOfNearestRestaurantsIfPincodeIsPassed(){
         int pincode = 123456;
         List<Restaurant> list = new ArrayList<Restaurant>(List.of(new Restaurant(), new Restaurant(), new Restaurant()));
-        when(this.mockedRestaurantDao.findNearestRestaurants(pincode)).thenReturn(list);
+        when(this.mockedRestaurantDao.findAllByPincode(pincode)).thenReturn(list);
 
         List<Restaurant> returnedList = this.restaurantsService.fetchAllRestaurants(Optional.of(pincode));
 
-        verify(this.mockedRestaurantDao, times(1)).findNearestRestaurants(pincode);
+        verify(this.mockedRestaurantDao, times(1)).findAllByPincode(pincode);
         assertEquals(list, returnedList);
     }
 

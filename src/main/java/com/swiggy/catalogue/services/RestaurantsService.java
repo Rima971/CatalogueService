@@ -24,7 +24,7 @@ public class RestaurantsService {
 
     public List<Restaurant> fetchAllRestaurants(Optional<Integer> pincode){
         try{
-            return this.restaurantsDao.findNearestRestaurants(pincode.get());
+            return this.restaurantsDao.findAllByPincode(pincode.get());
         } catch (NoSuchElementException e){
             return this.restaurantsDao.findAll();
         }
