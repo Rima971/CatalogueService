@@ -1,6 +1,6 @@
 package com.swiggy.catalogue.controllers;
 
-import com.swiggy.catalogue.entities.GenericHttpResponse;
+import com.swiggy.catalogue.dtos.GenericHttpResponse;
 import com.swiggy.catalogue.exceptions.DuplicateRestaurantName;
 import com.swiggy.catalogue.exceptions.RestaurantNotFound;
 import jakarta.servlet.http.HttpServletRequest;

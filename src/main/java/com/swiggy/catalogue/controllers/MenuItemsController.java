@@ -1,7 +1,7 @@
 package com.swiggy.catalogue.controllers;
 
 import com.swiggy.catalogue.dtos.MenuItemRequestDto;
-import com.swiggy.catalogue.entities.GenericHttpResponse;
+import com.swiggy.catalogue.dtos.GenericHttpResponse;
 import com.swiggy.catalogue.entities.MenuItem;
 import com.swiggy.catalogue.services.MenuItemsService;
 import jakarta.validation.Valid;

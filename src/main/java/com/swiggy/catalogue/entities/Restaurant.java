@@ -11,13 +11,13 @@ import lombok.NoArgsConstructor;
 public class Restaurant {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    int id;
+    private int id;
 
     @Column(nullable = false, unique = true)
-    String name;
+    private String name;
 
     @Column(nullable = false)
-    int pincode;
+    private int pincode;
 
     public Restaurant(String name, int pincode){
         this.name = name;

@@ -1,7 +1,7 @@
 package com.swiggy.catalogue.controllers;
 
 import com.swiggy.catalogue.dtos.RestaurantRequestDto;
-import com.swiggy.catalogue.entities.GenericHttpResponse;
+import com.swiggy.catalogue.dtos.GenericHttpResponse;
 import com.swiggy.catalogue.entities.Restaurant;
 import com.swiggy.catalogue.exceptions.DuplicateRestaurantName;
 import com.swiggy.catalogue.exceptions.RestaurantNotFound;
