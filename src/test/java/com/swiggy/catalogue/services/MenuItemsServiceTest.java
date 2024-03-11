@@ -7,6 +7,7 @@ import com.swiggy.catalogue.entities.Money;
 import com.swiggy.catalogue.entities.Restaurant;
 import com.swiggy.catalogue.enums.Currency;
 import com.swiggy.catalogue.exceptions.InexistentMenuItem;
+import com.swiggy.catalogue.exceptions.ItemRestaurantConflictException;
 import com.swiggy.catalogue.repositories.MenuItemDao;
 import com.swiggy.catalogue.repositories.RestaurantsDao;
 import org.junit.jupiter.api.BeforeEach;
@@ -69,5 +70,12 @@ public class MenuItemsServiceTest {
         when(this.mockedMenuItemDao.findById(MENU_ITEM_ID)).thenReturn(Optional.empty());
 
         assertThrows(InexistentMenuItem.class, ()->this.menuItemsService.fetch(MENU_ITEM_ID, RESTAURANT_ID));
+    }
+
+    @Test
+    public void test_shouldThrowItemRestaurantConflictExceptionWhenItemIdDoesNotMatchTheGivenRestaurantId(){
+        when(this.mockedMenuItemDao.findById(MENU_ITEM_ID)).thenReturn(Optional.of(this.testMenuItem));
+
+        assertThrows(ItemRestaurantConflictException.class, ()->this.menuItemsService.fetch(MENU_ITEM_ID, RESTAURANT_ID+1));
     }
 }
