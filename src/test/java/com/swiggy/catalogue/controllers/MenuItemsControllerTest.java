@@ -20,9 +20,9 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
 import static com.swiggy.catalogue.Constants.*;
-import static com.swiggy.catalogue.constants.SuccessMessage.MENU_ITEM_SUCCESSFUL_CREATION;
-import static com.swiggy.catalogue.constants.SuccessMessage.RESTAURANT_SUCCESSFUL_CREATION;
+import static com.swiggy.catalogue.constants.SuccessMessage.*;
 import static org.mockito.Mockito.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -49,6 +49,7 @@ public class MenuItemsControllerTest {
     void setUp(){
         reset(this.menuItemsService);
         when(this.menuItemsService.create(RESTAURANT_ID, this.request)).thenReturn(this.testMenuItem);
+        when(this.menuItemsService.fetch(MENU_ITEM_ID, RESTAURANT_ID)).thenReturn(this.testMenuItem);
     }
 
     @Test
@@ -65,6 +66,22 @@ public class MenuItemsControllerTest {
                 .andExpect(jsonPath("$.data.price.amount").value(0))
                 .andExpect(jsonPath("$.data.price.currency").value(Currency.INR.name()));
 
-        verify(this.menuItemsService, times(1)).create(RESTAURANT_ID, this.request);
+        verify(this.menuItemsService, times(1)).create(MENU_ITEM_ID, this.request);
+    }
+
+    @Test
+    public void test_shouldSuccessfullyFetchMenuItem() throws Exception {
+
+        this.mockMvc.perform(get(BASE_URL+"/"+MENU_ITEM_ID).contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.status").value(HttpStatus.OK.name()))
+                .andExpect(jsonPath("$.statusCode").value(HttpStatus.OK.value()))
+                .andExpect(jsonPath("$.message").value(SUCCESSFULLY_FETCHED))
+                .andExpect(jsonPath("$.data.id").value(MENU_ITEM_ID))
+                .andExpect(jsonPath("$.data.name").value(MENU_ITEM_NAME))
+                .andExpect(jsonPath("$.data.price.amount").value(0))
+                .andExpect(jsonPath("$.data.price.currency").value(Currency.INR.name()));
+
+        verify(this.menuItemsService, times(1)).fetch(MENU_ITEM_ID,RESTAURANT_ID);
     }
 }

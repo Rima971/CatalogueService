@@ -2,6 +2,8 @@ package com.swiggy.catalogue.controllers;
 
 import com.swiggy.catalogue.dtos.GenericHttpResponse;
 import com.swiggy.catalogue.exceptions.DuplicateRestaurantName;
+import com.swiggy.catalogue.exceptions.InexistentMenuItem;
+import com.swiggy.catalogue.exceptions.ItemRestaurantConflictException;
 import com.swiggy.catalogue.exceptions.RestaurantNotFound;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.HttpStatus;
@@ -35,5 +37,15 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(RestaurantNotFound.class)
     public ResponseEntity<GenericHttpResponse> restaurantNotFound(RestaurantNotFound e){
         return GenericHttpResponse.create(HttpStatus.CONFLICT, RESTAURANT_NOT_FOUND, null);
+    }
+
+    @ExceptionHandler(InexistentMenuItem.class)
+    public ResponseEntity<GenericHttpResponse> menuItemNotFound(InexistentMenuItem e){
+        return GenericHttpResponse.create(HttpStatus.CONFLICT, MENU_ITEM_NOT_FOUND, null);
+    }
+
+    @ExceptionHandler(ItemRestaurantConflictException.class)
+    public ResponseEntity<GenericHttpResponse> menuItemNotBelongingToGivenRestaurant(ItemRestaurantConflictException e){
+        return GenericHttpResponse.create(HttpStatus.CONFLICT, e.getLocalizedMessage(), null);
     }
 }

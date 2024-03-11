@@ -11,6 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import static com.swiggy.catalogue.constants.SuccessMessage.MENU_ITEM_SUCCESSFUL_CREATION;
+import static com.swiggy.catalogue.constants.SuccessMessage.SUCCESSFULLY_FETCHED;
 
 @RestController
 @RequestMapping("/api/restaurants/{restaurantId}/menu-items")
@@ -21,5 +22,11 @@ public class MenuItemsController {
     public ResponseEntity<GenericHttpResponse> create(@PathVariable int restaurantId, @Valid @RequestBody MenuItemRequestDto menuItemRequestDto){
         MenuItem savedMenuItem = this.menuItemsService.create(restaurantId, menuItemRequestDto);
         return GenericHttpResponse.create(HttpStatus.CREATED, MENU_ITEM_SUCCESSFUL_CREATION, savedMenuItem);
+    }
+
+    @GetMapping("/{menuItemId}")
+    public ResponseEntity<GenericHttpResponse> fetch(@PathVariable int restaurantId, @PathVariable int menuItemId){
+        MenuItem fetchedItem = this.menuItemsService.fetch(menuItemId, restaurantId);
+        return GenericHttpResponse.create(HttpStatus.OK, SUCCESSFULLY_FETCHED, fetchedItem);
     }
 }
