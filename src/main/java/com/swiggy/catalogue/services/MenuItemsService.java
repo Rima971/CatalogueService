@@ -4,6 +4,8 @@ import com.swiggy.catalogue.dtos.MenuItemRequestDto;
 import com.swiggy.catalogue.entities.MenuItem;
 import com.swiggy.catalogue.entities.Money;
 import com.swiggy.catalogue.entities.Restaurant;
+import com.swiggy.catalogue.exceptions.InexistentMenuItem;
+import com.swiggy.catalogue.exceptions.ItemRestaurantConflictException;
 import com.swiggy.catalogue.repositories.MenuItemDao;
 import com.swiggy.catalogue.repositories.RestaurantsDao;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,5 +28,9 @@ public class MenuItemsService {
         return this.menuItemDao.save(item);
     }
 
-
+    public MenuItem fetch(int menuItemId, int restaurantId) throws InexistentMenuItem {
+        MenuItem menuItem = this.menuItemDao.findById(menuItemId).orElseThrow(InexistentMenuItem::new);
+        if (menuItem.getRestaurant().getId() != restaurantId) throw new ItemRestaurantConflictException(menuItemId, restaurantId);
+        return menuItem;
+    }
 }

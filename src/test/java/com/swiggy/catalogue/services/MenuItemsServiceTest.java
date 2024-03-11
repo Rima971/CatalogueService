@@ -42,7 +42,7 @@ public class MenuItemsServiceTest {
         when(this.mockedMenuItemDao.save(any(MenuItem.class))).thenReturn(this.testMenuItem);
     }
     @Test
-    public void test_shouldCreateARestaurant(){
+    public void test_shouldCreateAMenuItem(){
         MenuItemRequestDto request = spy(new MenuItemRequestDto(MENU_ITEM_NAME, new MoneyDto(this.testMenuItemPrice.getAmount(), this.testMenuItemPrice.getCurrency().name())));
         when(request.getPrice()).thenReturn(this.testMenuItemPrice);
 
@@ -51,5 +51,16 @@ public class MenuItemsServiceTest {
             assertEquals(this.testMenuItem, savedMenuItem);
         });
         verify(this.mockedMenuItemDao).save(any(MenuItem.class));
+    }
+
+    @Test
+    public void test_shouldFetchAMenuItem(){
+        when(this.mockedMenuItemDao.findById(MENU_ITEM_ID)).thenReturn(Optional.of(this.testMenuItem));
+
+        assertDoesNotThrow(()->{
+            MenuItem fetchedItem = this.menuItemsService.fetch(MENU_ITEM_ID, RESTAURANT_ID);
+            assertEquals(this.testMenuItem, fetchedItem);
+        });
+        verify(this.mockedMenuItemDao, times(1)).findById(MENU_ITEM_ID);
     }
 }
