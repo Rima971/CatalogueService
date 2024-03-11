@@ -1,6 +1,7 @@
 package com.swiggy.catalogue.controllers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.swiggy.catalogue.constants.ErrorMessage;
 import com.swiggy.catalogue.dtos.MenuItemRequestDto;
 import com.swiggy.catalogue.dtos.MoneyDto;
 import com.swiggy.catalogue.dtos.RestaurantRequestDto;
@@ -8,7 +9,10 @@ import com.swiggy.catalogue.entities.MenuItem;
 import com.swiggy.catalogue.entities.Money;
 import com.swiggy.catalogue.entities.Restaurant;
 import com.swiggy.catalogue.enums.Currency;
+import com.swiggy.catalogue.exceptions.InexistentMenuItem;
+import com.swiggy.catalogue.exceptions.ItemRestaurantConflictException;
 import com.swiggy.catalogue.services.MenuItemsService;
+import org.hamcrest.core.IsNull;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,6 +24,8 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
 import static com.swiggy.catalogue.Constants.*;
+import static com.swiggy.catalogue.constants.ErrorMessage.ITEM_NOT_OF_GIVEN_RESTAURANT;
+import static com.swiggy.catalogue.constants.ErrorMessage.MENU_ITEM_NOT_FOUND;
 import static com.swiggy.catalogue.constants.SuccessMessage.*;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -46,7 +52,7 @@ public class MenuItemsControllerTest {
     private MenuItemRequestDto request = new MenuItemRequestDto(MENU_ITEM_NAME, new MoneyDto(0, Currency.INR.name()));
 
     @BeforeEach
-    void setUp(){
+    void setUp() throws ItemRestaurantConflictException {
         reset(this.menuItemsService);
         when(this.menuItemsService.create(RESTAURANT_ID, this.request)).thenReturn(this.testMenuItem);
         when(this.menuItemsService.fetch(MENU_ITEM_ID, RESTAURANT_ID)).thenReturn(this.testMenuItem);
@@ -83,5 +89,29 @@ public class MenuItemsControllerTest {
                 .andExpect(jsonPath("$.data.price.currency").value(Currency.INR.name()));
 
         verify(this.menuItemsService, times(1)).fetch(MENU_ITEM_ID,RESTAURANT_ID);
+    }
+
+    @Test
+    public void test_shouldThrow409ConflictInexistentMenuItemWhenInvalidItemIdGivenWhileFetching() throws Exception {
+        when(this.menuItemsService.fetch(MENU_ITEM_ID, RESTAURANT_ID)).thenThrow(InexistentMenuItem.class);
+
+        this.mockMvc.perform(get(BASE_URL+"/"+MENU_ITEM_ID).contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isConflict())
+                .andExpect(jsonPath("$.status").value(HttpStatus.CONFLICT.name()))
+                .andExpect(jsonPath("$.statusCode").value(HttpStatus.CONFLICT.value()))
+                .andExpect(jsonPath("$.message").value(MENU_ITEM_NOT_FOUND))
+                .andExpect(jsonPath("$.data").value(IsNull.nullValue()));
+    }
+
+    @Test
+    public void test_shouldThrow409ConflictItemRestaurantConflictWhenItemDoesNotBelongToGivenRestaurantIdWhileFetching() throws Exception {
+        when(this.menuItemsService.fetch(MENU_ITEM_ID, RESTAURANT_ID)).thenThrow(new ItemRestaurantConflictException(MENU_ITEM_ID, RESTAURANT_ID));
+
+        this.mockMvc.perform(get(BASE_URL+"/"+MENU_ITEM_ID).contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isConflict())
+                .andExpect(jsonPath("$.status").value(HttpStatus.CONFLICT.name()))
+                .andExpect(jsonPath("$.statusCode").value(HttpStatus.CONFLICT.value()))
+                .andExpect(jsonPath("$.message").value(ITEM_NOT_OF_GIVEN_RESTAURANT.apply(new ErrorMessage.GroupedIds(MENU_ITEM_ID, RESTAURANT_ID))))
+                .andExpect(jsonPath("$.data").value(IsNull.nullValue()));
     }
 }

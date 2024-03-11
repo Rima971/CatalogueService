@@ -46,6 +46,6 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(ItemRestaurantConflictException.class)
     public ResponseEntity<GenericHttpResponse> menuItemNotBelongingToGivenRestaurant(ItemRestaurantConflictException e){
-        return GenericHttpResponse.create(HttpStatus.CONFLICT, e.getLocalizedMessage(), null);
+        return GenericHttpResponse.create(HttpStatus.CONFLICT, e.getMessage(), null);
     }
 }

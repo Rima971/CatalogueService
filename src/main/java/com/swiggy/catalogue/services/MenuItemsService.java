@@ -28,7 +28,7 @@ public class MenuItemsService {
         return this.menuItemDao.save(item);
     }
 
-    public MenuItem fetch(int menuItemId, int restaurantId) throws InexistentMenuItem {
+    public MenuItem fetch(int menuItemId, int restaurantId) throws InexistentMenuItem, ItemRestaurantConflictException {
         MenuItem menuItem = this.menuItemDao.findById(menuItemId).orElseThrow(InexistentMenuItem::new);
         if (menuItem.getRestaurant().getId() != restaurantId) throw new ItemRestaurantConflictException(menuItemId, restaurantId);
         return menuItem;

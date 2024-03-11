@@ -3,6 +3,7 @@ package com.swiggy.catalogue.controllers;
 import com.swiggy.catalogue.dtos.MenuItemRequestDto;
 import com.swiggy.catalogue.dtos.GenericHttpResponse;
 import com.swiggy.catalogue.entities.MenuItem;
+import com.swiggy.catalogue.exceptions.ItemRestaurantConflictException;
 import com.swiggy.catalogue.services.MenuItemsService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,7 +26,7 @@ public class MenuItemsController {
     }
 
     @GetMapping("/{menuItemId}")
-    public ResponseEntity<GenericHttpResponse> fetch(@PathVariable int restaurantId, @PathVariable int menuItemId){
+    public ResponseEntity<GenericHttpResponse> fetch(@PathVariable int restaurantId, @PathVariable int menuItemId) throws ItemRestaurantConflictException {
         MenuItem fetchedItem = this.menuItemsService.fetch(menuItemId, restaurantId);
         return GenericHttpResponse.create(HttpStatus.OK, SUCCESSFULLY_FETCHED, fetchedItem);
     }
