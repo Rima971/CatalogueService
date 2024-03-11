@@ -6,6 +6,7 @@ import com.swiggy.catalogue.entities.MenuItem;
 import com.swiggy.catalogue.entities.Money;
 import com.swiggy.catalogue.entities.Restaurant;
 import com.swiggy.catalogue.enums.Currency;
+import com.swiggy.catalogue.exceptions.InexistentMenuItem;
 import com.swiggy.catalogue.repositories.MenuItemDao;
 import com.swiggy.catalogue.repositories.RestaurantsDao;
 import org.junit.jupiter.api.BeforeEach;
@@ -16,8 +17,7 @@ import org.mockito.Mock;
 import java.util.Optional;
 
 import static com.swiggy.catalogue.Constants.*;
-import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.*;
@@ -62,5 +62,12 @@ public class MenuItemsServiceTest {
             assertEquals(this.testMenuItem, fetchedItem);
         });
         verify(this.mockedMenuItemDao, times(1)).findById(MENU_ITEM_ID);
+    }
+
+    @Test
+    public void test_shouldThrowInexistentMenuItemExceptionIfInvalidItemIdPassed(){
+        when(this.mockedMenuItemDao.findById(MENU_ITEM_ID)).thenReturn(Optional.empty());
+
+        assertThrows(InexistentMenuItem.class, ()->this.menuItemsService.fetch(MENU_ITEM_ID, RESTAURANT_ID));
     }
 }
